@@ -2,8 +2,17 @@ const { DataTypes } = require('sequelize');
 const { sequelize } = require('../config/database');
 const bcrypt = require('bcryptjs');
 const { roles } = require('../config/roles');
+const Form = require('./form.model');
 
 const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    unique: true,
+    defaultValue: DataTypes.UUIDV4,
+    allowNull: false,
+    autoIncrement: false,
+  },
   name: {
     type: DataTypes.STRING,
     allowNull: false,
@@ -39,6 +48,13 @@ const User = sequelize.define('User', {
   },
 }, {
   timestamps: true,
+});
+
+User.hasMany(Form, {
+  onDelete: 'CASCADE',
+  onUpdate: 'CASCADE',
+  foreignKey: 'userId',
+  as: 'forms'
 });
 
 User.beforeCreate(async (user) => {

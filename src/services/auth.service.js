@@ -16,6 +16,7 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   if (!user || !(await user.isPasswordMatch(password))) {
     throw new ApiError(httpStatus.UNAUTHORIZED, 'Incorrect email or password');
   }
+  delete user.password;
   return user;
 };
 
@@ -25,11 +26,15 @@ const loginUserWithEmailAndPassword = async (email, password) => {
  * @returns {Promise}
  */
 const logout = async (refreshToken) => {
-  const refreshTokenDoc = await Token.findOne({ token: refreshToken, type: tokenTypes.REFRESH, blacklisted: false });
+  const refreshTokenDoc = await Token.findOne({
+    token: refreshToken,
+    type: tokenTypes.REFRESH,
+    blacklisted: false,
+  });
   if (!refreshTokenDoc) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
   }
-  await refreshTokenDoc.remove();
+  await refreshTokenDoc.destroy();
 };
 
 /**

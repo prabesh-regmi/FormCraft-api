@@ -5,9 +5,12 @@ const logger = require('./config/logger');
 
 let server;
 
+const syncDatabase = async (sequelize) => sequelize.sync({ alter: true }).catch((err) => console.log("error-db", err));
+
 sequelize.authenticate()
   .then(() => {
     logger.info('Connected to MySQL');
+    // syncDatabase(sequelize);
     server = app.listen(config.port, () => {
       logger.info(`Listening to port ${config.port}`);
     });

@@ -3,13 +3,21 @@ const { sequelize } = require('../config/database');
 const { tokenTypes } = require('../config/tokens');
 
 const Token = sequelize.define('Token', {
+  id: {
+    type: DataTypes.UUID,
+    primaryKey: true,
+    unique: true,
+    defaultValue: DataTypes.UUIDV4,
+    allowNull: false,
+    autoIncrement: false,
+  },
   token: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
   },
   userId: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
     allowNull: false,
     references: {
       model: 'Users',

@@ -35,9 +35,16 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
  * @returns {Promise<Token>}
  */
 const saveToken = async (token, userId, expires, type, blacklisted = false) => {
+  console.log({
+    token,
+    userId: userId,
+    expires: expires.toDate(),
+    type,
+    blacklisted,
+  })
   const tokenDoc = await Token.create({
     token,
-    user: userId,
+    userId: userId,
     expires: expires.toDate(),
     type,
     blacklisted,
@@ -53,7 +60,7 @@ const saveToken = async (token, userId, expires, type, blacklisted = false) => {
  */
 const verifyToken = async (token, type) => {
   const payload = jwt.verify(token, config.jwt.secret);
-  const tokenDoc = await Token.findOne({ token, type, user: payload.sub, blacklisted: false });
+  const tokenDoc = await Token.findOne({ where: { token, type, user: payload.sub, blacklisted: false } });
   if (!tokenDoc) {
     throw new Error('Token not found');
   }
@@ -74,14 +81,10 @@ const generateAuthTokens = async (user) => {
   await saveToken(refreshToken, user.id, refreshTokenExpires, tokenTypes.REFRESH);
 
   return {
-    access: {
-      token: accessToken,
-      expires: accessTokenExpires.toDate(),
-    },
-    refresh: {
-      token: refreshToken,
-      expires: refreshTokenExpires.toDate(),
-    },
+    accessToken,
+    accessTokenExpires: accessTokenExpires.toDate(),
+    refreshToken,
+    refreshTokenExpires: refreshTokenExpires.toDate(),
   };
 };
 
