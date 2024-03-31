@@ -1,6 +1,18 @@
+const { Op } = require('sequelize');
 const httpStatus = require('http-status');
 const { User } = require('../models');
 const ApiError = require('../utils/ApiError');
+
+/**
+ * Create a user
+ * @param {String} email
+ * @param {id} userId
+ * @returns {Promise<User>}
+ */
+const isEmailTaken = async (email, userId) => {
+  const user = await User.findOne({ where: { email, id: { [Op.ne]: userId } } });
+  return !!user;
+};
 
 /**
  * Create a user
@@ -8,7 +20,7 @@ const ApiError = require('../utils/ApiError');
  * @returns {Promise<User>}
  */
 const createUser = async (userBody) => {
-  if (await User.isEmailTaken(userBody.email)) {
+  if (await isEmailTaken(userBody.email, null)) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
   return User.create(userBody);
@@ -16,7 +28,7 @@ const createUser = async (userBody) => {
 
 /**
  * Query for users
- * @param {Object} filter - Mongo filter
+ * @param {Object} filter - Filter 
  * @param {Object} options - Query options
  * @param {string} [options.sortBy] - Sort option in the format: sortField:(desc|asc)
  * @param {number} [options.limit] - Maximum number of results per page (default = 10)
@@ -24,7 +36,7 @@ const createUser = async (userBody) => {
  * @returns {Promise<QueryResult>}
  */
 const queryUsers = async (filter, options) => {
-  const users = await User.paginate(filter, options);
+  const users = await User.findAll({ ...filter, ...options });
   return users;
 };
 
@@ -34,7 +46,7 @@ const queryUsers = async (filter, options) => {
  * @returns {Promise<User>}
  */
 const getUserById = async (id) => {
-  return User.findById(id);
+  return User.findByPk(id);
 };
 
 /**
@@ -42,9 +54,7 @@ const getUserById = async (id) => {
  * @param {string} email
  * @returns {Promise<User>}
  */
-const getUserByEmail = async (email) => {
-  return User.findOne({ email });
-};
+const getUserByEmail = async (email) => User.findOne({ where: { email } });
 
 /**
  * Update user by id
@@ -57,7 +67,7 @@ const updateUserById = async (userId, updateBody) => {
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
   }
-  if (updateBody.email && (await User.isEmailTaken(updateBody.email, userId))) {
+  if (updateBody.email && (await isEmailTaken(updateBody.email, userId))) {
     throw new ApiError(httpStatus.BAD_REQUEST, 'Email already taken');
   }
   Object.assign(user, updateBody);
