@@ -5,7 +5,7 @@ const logger = require('./config/logger');
 
 let server;
 
-const syncDatabase = async (sequelize) => sequelize.sync({ alter: true }).catch((err) => console.log("error-db", err));
+const syncDatabase = async (sequelize) => sequelize.sync({ force: true }).catch((err) => console.log("error-db", err));
 
 sequelize.authenticate()
   .then(() => {

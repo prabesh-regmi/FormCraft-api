@@ -17,11 +17,12 @@ async function deleteOptionsByInputId(inputId) {
 
 async function createInput(input, formId) {
     const { options, ...inputData } = input;
+    console.log("input --------->", input)
     return Input.create({
         ...inputData, formId
     }).then(async (newInput) => {
         if (options && options.length)
-            await createInputs(options, newInput.id)
+            await createOptions(options, newInput.id)
         return newInput
     })
 }

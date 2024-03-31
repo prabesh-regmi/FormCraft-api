@@ -26,13 +26,13 @@ const InputSchema = Joi.object({
     'any.required': 'Label is required.',
     'string.empty': 'Label cannot be empty.'
   }),
-  value: Joi.string().allow(null).messages({
+  value: Joi.string().allow(null).allow('').messages({
     'string.base': 'Value must be a string.',
   }),
   required: Joi.boolean().default(false).messages({
     'boolean.base': 'Required must be a boolean.'
   }),
-  placeholder: Joi.string().allow(null).messages({
+  placeholder: Joi.string().allow(null).allow('').messages({
     'string.base': 'Placeholder must be a string.'
   }),
   disabled: Joi.boolean().default(false).messages({

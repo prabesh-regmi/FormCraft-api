@@ -41,6 +41,7 @@ const getForms = async () => {
 };
 
 async function createForm(formData, userId) {
+    console.log("here------>")
     const { name, inputs } = formData;
     if (await checkFormNameTaken(name)) {
         throw new ApiError(httpStatus.BAD_REQUEST, 'Form name already taken');
