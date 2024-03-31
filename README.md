@@ -1,5 +1,3 @@
-cat <<EOF > README.md
-
 # FormCraft API
 
 Welcome to FormCraft API! This project serves as the backend for the FormCraft web application, providing essential functionalities for user authentication, form management, and data storage.
